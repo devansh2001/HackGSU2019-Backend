@@ -1,6 +1,8 @@
 package com.hackgsu2019.backend.controller;
 
 import com.hackgsu2019.backend.model.AddItemByCodeModel;
+import com.hackgsu2019.backend.model.Category;
+import com.hackgsu2019.backend.model.Item;
 import com.hackgsu2019.backend.service.ServerService;
 import lombok.AllArgsConstructor;
 import okhttp3.MediaType;
@@ -49,5 +51,17 @@ public class Manager {
     public ResponseEntity viewCart() {
         ServerService serverService = new ServerService();
         return serverService.viewCart();
+    }
+
+    @RequestMapping(value = "/get-similar-products", method = RequestMethod.GET)
+    public ResponseEntity findSimilarItems(@RequestBody Item item) {
+        ServerService serverService = new ServerService();
+        return serverService.findRelated(item.getCategory());
+    }
+
+    @RequestMapping(value = "test-unirest", method = RequestMethod.GET)
+    public ResponseEntity testuni() {
+        ServerService serverService = new ServerService();
+        return serverService.testUnirest();
     }
 }

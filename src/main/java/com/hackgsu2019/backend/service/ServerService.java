@@ -4,6 +4,9 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.*;
 import com.hackgsu2019.backend.model.AddItemByCodeModel;
 import com.hackgsu2019.backend.model.Item;
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,7 +81,7 @@ public class ServerService {
         System.out.println("Executed: " + query);
         try {
             ResultSet resultSet = statement.executeQuery(query);
-            String id = " ", name = " ";
+            String id = "", name = "", category = "";
             double price = 0.0;
             boolean flag = false;
 
@@ -87,10 +90,11 @@ public class ServerService {
                 id = resultSet.getString(1);
                 name = resultSet.getString(2);
                 price = Double.parseDouble(resultSet.getString(3));
+                category = resultSet.getString(4);
                 flag = true;
-                temp = new Item(id, name, price);
+                temp = new Item(id, name, price, category);
                 System.out.println("Received " + "[ " + id + ", " + name + ", " + price +
-                        " ]");
+                        ", " + category + " ]");
             }
             if (flag) {
                 query = "INSERT INTO cart (id, name, price) VALUES (\"" + id +
@@ -112,7 +116,8 @@ public class ServerService {
             while (resultSet.next()) {
                 list.add(new Item(resultSet.getString(1),
                         resultSet.getString(2),
-                        Double.parseDouble(resultSet.getString(3))
+                        Double.parseDouble(resultSet.getString(3)),
+                        resultSet.getString(4)
                 ));
             }
         } catch (Exception e) {
@@ -120,6 +125,56 @@ public class ServerService {
         }
         return new ResponseEntity<List<Item>>(list, HttpStatus.OK);
 
+    }
+
+    public ResponseEntity testUnirest() {
+//        HttpResponse<Item> response = Unirest.get("https://hackgsu-257800" +
+//                ".appspot.com")
+//                .header("Content-Type", "application/json")
+//                .fiel("id", "4");
+        HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post")
+                .header("accept", "application/json")
+                .queryString("apiKey", "123")
+                .field("parameter", "value")
+                .field("foo", "bar")
+                .asJson();
+        System.out.println(response.getBody());
+        System.out.println(response);
+
+
+        response = Unirest.get("http://localhost:8080/shop/view-cart")
+                .header("Content-Type", "application/json")
+                .asJson();
+        System.out.println(response.getBody());
+        return new ResponseEntity<JsonNode>(HttpStatus.OK);
+    }
+
+    public ResponseEntity payment() {
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    public ResponseEntity findRelated(String itemCategory) {
+        List<Item> list = new ArrayList<>();
+        String query =
+                "SELECT * from items WHERE category=\"" + itemCategory +
+                        "\"";
+        System.out.println("Execute: " + query);
+        try {
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                list.add(new Item(
+                        resultSet.getString(1),
+                        resultSet.getString(2),
+                        Double.parseDouble(resultSet.getString(3)),
+                        resultSet.getString(4)
+                ));
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error in Query: " + query);
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<Item>>(list, HttpStatus.OK);
     }
 
     private boolean checkItemValidity(String id) {

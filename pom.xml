@@ -119,6 +119,12 @@
             <artifactId>appengine-maven-plugin</artifactId>
             <version>1.9.75</version>
         </dependency>
+        <dependency>
+            <groupId>com.konghq</groupId>
+            <artifactId>unirest-java</artifactId>
+            <version>3.1.02</version>
+        </dependency>
+
     </dependencies>
 
 	<!--<dependencyManagement>-->
