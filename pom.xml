@@ -114,6 +114,11 @@
             <artifactId>okhttp</artifactId>
             <version>4.2.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-maven-plugin</artifactId>
+            <version>1.9.75</version>
+        </dependency>
     </dependencies>
 
 	<!--<dependencyManagement>-->
@@ -134,8 +139,21 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-		</plugins>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>appengine-maven-plugin</artifactId>
+                <version>2.1.0</version>
+                <configuration>
+                    <version>1</version>
+                    <projectId>GCLOUD_CONFIG</projectId>
+                </configuration>
+            </plugin>
+            <!-- https://mvnrepository.com/artifact/com.google.appengine/appengine-maven-plugin -->
+
+
+        </plugins>
 	</build>
+
 
 	<repositories>
 		<repository>
