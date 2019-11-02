@@ -34,13 +34,9 @@ public class Manager {
     @GetMapping("/test")
     public ResponseEntity refresh() throws IOException {
         ServerService serverService = new ServerService();
-//        final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-
-//        RequestBody body = RequestBody.create(JSON, json);
         return serverService.test();
     }
 
-//    @PostMapping("/add-item-by-code")
     @RequestMapping(value = "/add-item-by-code", method = RequestMethod.POST)
     public ResponseEntity addItemByCode(@RequestBody AddItemByCodeModel addItemByCodeModel) {
         ServerService serverService = new ServerService();
@@ -54,9 +50,15 @@ public class Manager {
     }
 
     @RequestMapping(value = "/get-similar-products", method = RequestMethod.GET)
-    public ResponseEntity findSimilarItems(@RequestBody Item item) {
+    public ResponseEntity findSimilarItems(@RequestBody AddItemByCodeModel addItemByCodeModel) {
         ServerService serverService = new ServerService();
-        return serverService.findRelated(item.getCategory());
+        return serverService.findRelated(addItemByCodeModel.getId());
+    }
+
+    @RequestMapping(value = "/payment", method = RequestMethod.GET)
+    public ResponseEntity payment() {
+        ServerService serverService = new ServerService();
+        return serverService.payment();
     }
 
     @RequestMapping(value = "test-unirest", method = RequestMethod.GET)

@@ -7,6 +7,12 @@ import com.hackgsu2019.backend.model.Item;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +31,11 @@ public class ServerService {
     private String password;
     private Connection connection;
     private Statement statement;
+    private String ncrConnectionKey;
+
+    private String sourceAccountId = "rf5ao6Qclwsth9OfOvUb-EeV1m2BfmTzUEALGLQ3ehU";
+    private String toAccountId = "W4vrnyCIYqtzYybyi1dChNBtVD7kWbvrTEljsZq5z6Y";
+
 
     public ServerService() {
         System.out.println("Hello");
@@ -149,8 +160,46 @@ public class ServerService {
         return new ResponseEntity<JsonNode>(HttpStatus.OK);
     }
 
+    private String getAccessToken() {
+        OkHttpClient client = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
+        RequestBody body = RequestBody.create(mediaType, "grant_type=client_credentials&scopes=accounts%3Aread%2Ctransactions%3Aread");
+        Request request = new Request.Builder()
+                .url("http://ncrdev-dev.apigee.net/digitalbanking/oauth2/v1/token")
+                .post(body)
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .addHeader("Authorization", "Basic alI3RWg3dUF5cFQ0dEpMb0xVMmRBTVlHQ1l5ejZsVjg6T3FRZXQ0OE5YWDdTQXB4SA==")
+                .addHeader("transactionId", "b5571b8a-6ffe-4872-a13f-f60a2f1907cc")
+                .addHeader("institutionId", "00516")
+                .addHeader("Accept", "application/json")
+                .addHeader("User-Agent", "PostmanRuntime/7.19.0")
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Postman-Token", "e4fbc0cb-95a7-42c3-806f-d9beba14ae92,111f6a7c-0f0f-4197-9b4a-e321e9b81686")
+                .addHeader("Host", "ncrdev-dev.apigee.net")
+                .addHeader("Accept-Encoding", "gzip, deflate")
+                .addHeader("Content-Length", "74")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("cache-control", "no-cache")
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            System.out.println(response.toString());
+            JSONObject obj = new JSONObject(response.body().string());
+            return obj.get("access_token").toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public ResponseEntity payment() {
+//        this.ncrConnectionKey = getAccessToken();
+//        while (this.ncrConnectionKey == null) {
+//            this.ncrConnectionKey = getAccessToken();
+//        }
         return new ResponseEntity(HttpStatus.OK);
+
     }
 
     public ResponseEntity findRelated(String itemCategory) {
