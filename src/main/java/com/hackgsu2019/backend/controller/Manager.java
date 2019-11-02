@@ -1,5 +1,6 @@
 package com.hackgsu2019.backend.controller;
 
+import com.hackgsu2019.backend.model.AddItemByCodeModel;
 import com.hackgsu2019.backend.service.ServerService;
 import lombok.AllArgsConstructor;
 import okhttp3.MediaType;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 
 @ComponentScan
 @RestController
@@ -26,6 +28,7 @@ import java.net.URL;
 @AllArgsConstructor
 @RequestMapping("/shop")
 public class Manager {
+
     @GetMapping("/test")
     public ResponseEntity refresh() throws IOException {
         ServerService serverService = new ServerService();
@@ -33,5 +36,18 @@ public class Manager {
 
 //        RequestBody body = RequestBody.create(JSON, json);
         return serverService.test();
+    }
+
+//    @PostMapping("/add-item-by-code")
+    @RequestMapping(value = "/add-item-by-code", method = RequestMethod.POST)
+    public ResponseEntity addItemByCode(@RequestBody AddItemByCodeModel addItemByCodeModel) {
+        ServerService serverService = new ServerService();
+        return serverService.addItemByCode(addItemByCodeModel.getId());
+    }
+
+    @RequestMapping(value = "/view-cart", method = RequestMethod.GET)
+    public ResponseEntity viewCart() {
+        ServerService serverService = new ServerService();
+        return serverService.viewCart();
     }
 }

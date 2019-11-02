@@ -2,6 +2,8 @@ package com.hackgsu2019.backend.service;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.*;
+import com.hackgsu2019.backend.model.AddItemByCodeModel;
+import com.hackgsu2019.backend.model.Item;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,13 +13,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerService {
-    String url;
-    String user;
-    String password;
-    Connection connection;
-    Statement statement;
+    private String url;
+    private String user;
+    private String password;
+    private Connection connection;
+    private Statement statement;
 
     public ServerService() {
         System.out.println("Hello");
@@ -61,5 +65,80 @@ public class ServerService {
             System.out.println("Error");
         }
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    public ResponseEntity addItemByCode(String requestedId) {
+        if (!checkItemValidity(requestedId)) {
+            System.out.println("Item is not present");
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        Item temp = new Item();
+        System.out.println("Item is present");
+        String query = "SELECT * FROM items WHERE id = \"" + requestedId + "\"";
+        System.out.println("Executed: " + query);
+        try {
+            ResultSet resultSet = statement.executeQuery(query);
+            String id = " ", name = " ";
+            double price = 0.0;
+            boolean flag = false;
+
+            while (resultSet.next()) {
+
+                id = resultSet.getString(1);
+                name = resultSet.getString(2);
+                price = Double.parseDouble(resultSet.getString(3));
+                flag = true;
+                temp = new Item(id, name, price);
+                System.out.println("Received " + "[ " + id + ", " + name + ", " + price +
+                        " ]");
+            }
+            if (flag) {
+                query = "INSERT INTO cart (id, name, price) VALUES (\"" + id +
+                        "\"" + ", " + "\"" + name + "\"" + ", " + price + ")";
+                System.out.println(query);
+                statement.execute(query);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<Item>(temp, HttpStatus.OK);
+    }
+
+    public ResponseEntity viewCart() {
+        String query = "SELECT * from cart";
+        List<Item> list = new ArrayList<>();
+        try {
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                list.add(new Item(resultSet.getString(1),
+                        resultSet.getString(2),
+                        Double.parseDouble(resultSet.getString(3))
+                ));
+            }
+        } catch (Exception e) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<List<Item>>(list, HttpStatus.OK);
+
+    }
+
+    private boolean checkItemValidity(String id) {
+        if (id == null) {
+            return false;
+        }
+        String query = "SELECT * FROM items";
+        try {
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                String idFromDb = resultSet.getString(1);
+                if (idFromDb.equals(id)) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
     }
 }
