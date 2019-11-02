@@ -202,12 +202,29 @@ public class ServerService {
 
     }
 
-    public ResponseEntity findRelated(String itemCategory) {
+    public ResponseEntity findRelated(String id) {
         List<Item> list = new ArrayList<>();
+
+
         String query =
-                "SELECT * from items WHERE category=\"" + itemCategory +
+                "SELECT * from items WHERE id=\"" + id +
                         "\"";
         System.out.println("Execute: " + query);
+        String category = "";
+        try {
+            ResultSet resultSet = statement.executeQuery(query);
+
+
+            while (resultSet.next()) {
+                if (resultSet.getString(1).equals(id)) {
+                    category = resultSet.getString(4);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error in Query: " + query);
+            e.printStackTrace();
+        }
+        query = "SELECT * FROM items WHERE category=\"" + category + "\"";
         try {
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
@@ -218,9 +235,8 @@ public class ServerService {
                         resultSet.getString(4)
                 ));
             }
-
         } catch (Exception e) {
-            System.out.println("Error in Query: " + query);
+            System.out.println("Error in query: " + query);
             e.printStackTrace();
         }
         return new ResponseEntity<List<Item>>(list, HttpStatus.OK);
