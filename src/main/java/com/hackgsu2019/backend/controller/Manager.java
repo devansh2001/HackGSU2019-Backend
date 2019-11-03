@@ -61,6 +61,12 @@ public class Manager {
         return serverService.payment();
     }
 
+    @RequestMapping(value = "/get-similar-product", method = RequestMethod.GET)
+    public ResponseEntity similar(@RequestBody Item item) {
+        ServerService serverService = new ServerService();
+        return serverService.findRelatedByItemCategory(item.getCategory());
+    }
+
     @RequestMapping(value = "test-unirest", method = RequestMethod.GET)
     public ResponseEntity testuni() {
         ServerService serverService = new ServerService();

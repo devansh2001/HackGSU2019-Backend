@@ -236,6 +236,13 @@ public class ServerService {
         return new ResponseEntity<List<Item>>(list, HttpStatus.OK);
     }
 
+    public ResponseEntity findRelatedByItemCategory(String category) {
+        String query = "SELECT * FROM items WHERE category=\"" + category +
+                "\"";
+        System.out.println(query);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
     private boolean checkItemValidity(String id) {
         if (id == null) {
             return false;
