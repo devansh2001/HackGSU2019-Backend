@@ -193,12 +193,54 @@ public class ServerService {
         return null;
     }
 
+    public ResponseEntity getCurrentBalance() {
+        double currentBalance = 0.0;
+        String query = "SELECT * FROM balance";
+        try {
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                currentBalance = Double.parseDouble(resultSet.getString(1));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<Double>(currentBalance, HttpStatus.OK);
+    }
+
     public ResponseEntity payment() {
-//        this.ncrConnectionKey = getAccessToken();
-//        while (this.ncrConnectionKey == null) {
-//            this.ncrConnectionKey = getAccessToken();
-//        }
-        return new ResponseEntity(HttpStatus.OK);
+        this.ncrConnectionKey = getAccessToken();
+        while (this.ncrConnectionKey == null) {
+            this.ncrConnectionKey = getAccessToken();
+        }
+        double currentBalance = 0.0;
+        double bill = 0.0;
+        double remainingBalance = 0.0;
+        String query = "SELECT * FROM balance";
+        String query2 = "SELECT SUM(price) from cart";
+        try {
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                currentBalance = Double.parseDouble(resultSet.getString(1));
+            }
+            resultSet = statement.executeQuery(query2);
+            while(resultSet.next()) {
+                bill = Double.parseDouble(resultSet.getString(1));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        remainingBalance = currentBalance - bill;
+        query =
+                "INSERT INTO balance (remainingMoney) VALUES (" + remainingBalance + ")";
+        try {
+            statement.execute(query);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<Double>(remainingBalance, HttpStatus.OK);
 
     }
 

@@ -54,12 +54,21 @@ public class Manager {
         ServerService serverService = new ServerService();
         return serverService.findRelated(addItemByCodeModel.getId());
     }
-
+    @RequestMapping(value = "/get-balance", method = RequestMethod.GET)
+    public ResponseEntity getCurrentBalance() {
+        ServerService serverService = new ServerService();
+        return serverService.getCurrentBalance();
+    }
     @RequestMapping(value = "/payment", method = RequestMethod.GET)
     public ResponseEntity payment() {
         ServerService serverService = new ServerService();
         return serverService.payment();
     }
+
+
+
+
+
 
     @RequestMapping(value = "/get-similar-product", method = RequestMethod.GET)
     public ResponseEntity similar(@RequestBody Item item) {
