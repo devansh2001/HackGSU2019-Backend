@@ -204,17 +204,12 @@ public class ServerService {
 
     public ResponseEntity findRelated(String id) {
         List<Item> list = new ArrayList<>();
-
-
         String query =
-                "SELECT * from items WHERE id=\"" + id +
-                        "\"";
+                "SELECT * from items WHERE id=\"" + id + "\"";
         System.out.println("Execute: " + query);
         String category = "";
         try {
             ResultSet resultSet = statement.executeQuery(query);
-
-
             while (resultSet.next()) {
                 if (resultSet.getString(1).equals(id)) {
                     category = resultSet.getString(4);
