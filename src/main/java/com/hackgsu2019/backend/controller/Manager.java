@@ -49,8 +49,7 @@ public class Manager {
         return serverService.viewCart();
     }
 
-    @RequestMapping(value = "/get-similar-products", method =
-            RequestMethod.POST)
+    @RequestMapping(value = "/get-similar-products", method = RequestMethod.POST)
     public ResponseEntity findSimilarItems(@RequestBody AddItemByCodeModel addItemByCodeModel) {
         ServerService serverService = new ServerService();
         return serverService.findRelated(addItemByCodeModel.getId());

@@ -204,8 +204,7 @@ public class ServerService {
 
     public ResponseEntity findRelated(String id) {
         List<Item> list = new ArrayList<>();
-        String query =
-                "SELECT * from items WHERE id=\"" + id + "\"";
+        String query = "SELECT * from items WHERE id=\"" + id + "\"";
         System.out.println("Execute: " + query);
         String category = "";
         try {
